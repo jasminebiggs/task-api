@@ -26,6 +26,8 @@ get:
             type: array
             items:
               $ref: ../components/schemas/Task.yaml
+    '500':
+      description: Internal server error
 post:
   summary: Create a new task
   tags:
@@ -44,4 +46,12 @@ post:
           schema:
             $ref: ../components/schemas/Task.yaml
     '400':
-      $ref: ../components/schemas/ValidationError.yaml
+      description: Invalid input
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Invalid task data

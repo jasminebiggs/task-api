@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  output   = "../src/generated/prisma/client"
 }
 
 datasource db {
@@ -15,8 +15,9 @@ datasource db {
 }
 
 model Task {
-  id          Int      @id @default(autoincrement())
-  title       String
-  completed   Boolean? @default(false)
-  @@map("tasks")
+  id        Int      @id @default(autoincrement())
+  title     String
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

@@ -1,37 +1,42 @@
 import express from 'express';
-import morgan from 'morgan';
 import cors from 'cors';
-import swaggerUI from 'swagger-ui-express';
-import YAML from 'yamljs';
 import taskRoutes from './routes/taskRoutes.js';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-app.use(cors());
+
+app.use(cors({
+  origin: [
+    'http://localhost:3000',            // Local Swagger
+    'https://task-api-x9sf.onrender.com' // Render-hosted API
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
-app.use(morgan('tiny'));
 
-const specs = YAML.load('./public/bundled.yaml');
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
-});
+const swaggerDocument = YAML.load(path.join(__dirname, '../docs/openapi.yaml'));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 
 app.use('/tasks', taskRoutes);
 
-app.use((req, res, next) => {
-  res.status(404).json({ error: 'Not found' });
+
+app.get('/', (req, res) => {
+  res.send('🚀 Task API is running successfully!');
 });
 
-app.use((err, req, res, next) => {
-  console.error(err);
-  const status = err.status || 500;
-  res.status(status).json({
-    error: err.message || 'Internal Server Error',
-  });
-});
-
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
