@@ -32,7 +32,15 @@ app.use('/tasks', taskRoutes);
 
 
 app.get('/', (req, res) => {
-  res.send('🚀 Task API is running successfully!');
+  res.json({
+    message: ' Task API is live and running on Render!',
+    endpoints: {
+      listAllTasks: '/tasks',
+      createTask: '/tasks',
+      getTaskById: '/tasks/{id}',
+      swaggerDocs: '/api-docs'
+    }
+  });
 });
 
 const PORT = process.env.PORT || 3000;
